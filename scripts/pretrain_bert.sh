@@ -9,11 +9,10 @@ python pretrain_bert.py \
     --cache-dir cache_dir \
     --tokenizer-model-type bert-large-uncased \
     --vocab-size 30522 \
-    --train-data wikipedia \
+    --train-data wikipedia_train \
+    --valid-data wikipedia_valid \
+    --test-data wikipedia_test \
     --presplit-sentences \
-    --loose-json \
-    --text-key text \
-    --split 1000,1,1 \
     --lazy-loader \
     --max-preds-per-seq 80 \
     --seq-length 512 \
@@ -36,3 +35,7 @@ python pretrain_bert.py \
     --fp32-embedding \
     --hysteresis 2 \
     --num-workers 2
+
+    # --loose-json \
+    # --text-key text \
+    # --split 1000,1,1 \

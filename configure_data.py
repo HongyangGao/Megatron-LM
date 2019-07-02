@@ -46,7 +46,8 @@ def make_data_loader(dataset, batch_size, args):
 
     shuffle = args.shuffle
     if shuffle:
-        sampler = data_utils.samplers.RandomSampler(dataset, replacement=True, num_samples=batch_size*args.train_iters)
+        sampler = data_utils.samplers.RandomSampler(
+            dataset, replacement=True, num_samples=batch_size*args.train_iters)
     else:
         sampler = torch.utils.data.SequentialSampler(dataset)
     world_size = args.world_size
@@ -76,7 +77,7 @@ def make_data_loader(dataset, batch_size, args):
 def make_tfrecord_loaders(args):
     """Load train/val/test dataset from shuffled TFRecords"""
 
-    import data_utils.tf_dl 
+    import data_utils.tf_dl
     data_set_args = {'batch_size': args.batch_size,
                      'max_seq_len': args.seq_length,
                      'max_preds_per_seq': args.max_preds_per_seq,
@@ -186,6 +187,7 @@ def make_loaders(args):
 
     return (train, valid, test), tokenizer
 
+
 def get_split(args):
     """
     Get dataset splits from comma separated string list
@@ -209,6 +211,7 @@ def get_split(args):
         splits[2] = 0.
     final_sum = sum(splits)
     return [s/final_sum for s in splits]
+
 
 def configure_data():
 

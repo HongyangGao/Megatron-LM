@@ -437,6 +437,64 @@ class json_dataset(data.Dataset):
                 j[self.label_key] = -1
             yield j
 
+
+class txt_dataset(data.Dataset):
+    """
+    Class for loading datasets from a text file.
+    Purpose: Useful for loading data for unsupervised modeling or transfer tasks
+    Arguments:
+        path (str): path to json file with dataset.
+        tokenizer (data_utils.Tokenizer): Tokenizer to use when processing text. Default: None
+        preprocess_fn (callable): callable function that process a string into desired format.
+            Takes string, maxlen=None, encode=None as arguments. Default: process_str
+        text_key (str): key to get text from json dictionary. Default: 'sentence'
+        label_key (str): key to get label from json dictionary. Default: 'label'
+    Attributes:
+        all_strs (list): list of all strings from the dataset
+        all_labels (list): list of all labels from the dataset (if they have it)
+    """
+    def __init__(self, path, tokenizer=None, preprocess_fn=None, **kwargs):
+        self.preprocess_fn = preprocess_fn
+        self.path = path
+        self.SetTokenizer(tokenizer)
+        self.X = []
+
+        with open(self.path, 'r', encoding='utf-8') as f:
+            for i, line in enumerate(f):
+                if i % 4 == 3:  # every the 4th line is the text
+                    self.X.append(line.strip())
+
+    def SetTokenizer(self, tokenizer):
+        if tokenizer is None:
+            self.using_tokenizer = False
+            if not hasattr(self, '_tokenizer'):
+                self._tokenizer = tokenizer
+        else:
+            self.using_tokenizer = True
+            self._tokenizer = tokenizer
+
+    def GetTokenizer(self):
+        return self._tokenizer
+
+    @property
+    def tokenizer(self):
+        if self.using_tokenizer:
+            return self._tokenizer
+        return None
+
+    def __getitem__(self, index):
+        """gets the index'th string from the dataset"""
+        x = self.X[index]
+        if self.tokenizer is not None:
+            x = self.tokenizer.EncodeAsIds(x, self.preprocess_fn)
+        elif self.preprocess_fn is not None:
+            x = self.preprocess_fn(x)
+        return {'text': x, 'length': len(x), 'label': None}
+
+    def __len__(self):
+        return len(self.X)
+
+
 class bert_sentencepair_dataset(data.Dataset):
     """
     Dataset containing sentencepairs for BERT training. Each index corresponds to a randomly generated sentence pair.

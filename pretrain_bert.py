@@ -97,7 +97,7 @@ def get_optimizer(model, args):
                                    dynamic_loss_scale=args.dynamic_loss_scale,
                                    dynamic_loss_args={
                                        'scale_window': args.loss_scale_window,
-                                       'min_scale':args.min_scale,
+                                       'min_scale': args.min_scale,
                                        'delayed_shift': args.hysteresis})
 
     return optimizer
@@ -152,8 +152,8 @@ def get_batch(data):
     Note that despite the name of the function, the subdivison of data is not
     done along the batch dimension (i.e. dimension 1), since that was handled
     by the data loader. The chunks are along dimension 0, corresponding
-    to the seq_len dimension in the LSTM. A Variable representing an appropriate
-    shard reset mask of the same dimensions is also returned.
+    to the seq_len dimension in the LSTM. A Variable representing an
+    appropriate shard reset mask of the same dimensions is also returned.
     '''
     tokens = torch.autograd.Variable(data['text'].long())
     types = torch.autograd.Variable(data['types'].long())
@@ -239,8 +239,8 @@ def train_step(input_data, model, criterion, optimizer, lr_scheduler, args):
     lm_loss, nsp_loss = forward_step(input_data, model, criterion, args)
 
     # Calculate gradients, reduce across processes, and clip.
-    lm_loss_reduced, nsp_loss_reduced = backward_step(optimizer, model, lm_loss,
-                                                      nsp_loss, args)
+    lm_loss_reduced, nsp_loss_reduced = backward_step(
+        optimizer, model, lm_loss, nsp_loss, args)
 
     # Update parameters.
     optimizer.step()
@@ -455,10 +455,9 @@ def main():
                 if args.save:
                     best_path = 'best/model.pt'
                     print('saving best model to:',
-                           os.path.join(args.save, best_path))
+                          os.path.join(args.save, best_path))
                     save_checkpoint(best_path, epoch+1, total_iters, model,
                                     optimizer, lr_scheduler, args)
-
 
     except KeyboardInterrupt:
         print('-' * 100)
@@ -466,7 +465,7 @@ def main():
         if args.save:
             cur_path = 'current/model.pt'
             print('saving current model to:',
-                   os.path.join(args.save, cur_path))
+                  os.path.join(args.save, cur_path))
             save_checkpoint(cur_path, epoch, total_iters, model, optimizer,
                             lr_scheduler, args)
         exit()
